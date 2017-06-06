@@ -1,0 +1,13 @@
+Debug
+Release
+Profile
+build
+*.sdf
+*.opensdf
+*.suo
+.*.swp
+*.user
+*.db
+*.opendb
+cmake-build-*
+.idea
