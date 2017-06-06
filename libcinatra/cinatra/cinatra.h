@@ -39,12 +39,13 @@ namespace cinatra
 		template<class Work, class... Args>
 		void start(Args&&... args)
 		{
-			server_ = std::make_shared<http_server>(std::make_shared<Work>(std::forward<Args>(args)...));
-			start_();
+			start_(std::make_shared<Work>(std::forward<Args>(args)...));
 		}
 	private:
-		void start_()
+		void start_(const io_service_work_ptr & work)
 		{
+			server_ = std::make_shared<http_server>(work);
+
 			server_->request_handler([this](request const& req, response& res)
 			{
 				context_container ctx;
