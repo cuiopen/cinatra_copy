@@ -70,6 +70,8 @@ namespace cinatra
 
 	void io_service_pool::stop()
 	{
+		work_.clear();
+
 		for (std::size_t i = 0; i < io_services_.size(); ++i)
 			io_services_[i]->stop();
 
@@ -129,10 +131,12 @@ namespace cinatra
 
 	void io_service_inplace::stop()
 	{
+		work_ = nullptr;
+
 		if (io_services_)
 		{
-			io_services_->stop();
 			io_services_->run();
+			io_services_->stop();
 
 			io_services_ = nullptr;
 		}

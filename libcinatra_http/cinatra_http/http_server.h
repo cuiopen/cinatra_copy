@@ -78,6 +78,9 @@ namespace cinatra
 
 		io_service_work_ptr io_service_pool_;
 		request_handler_t request_handler_;
+		
+		typedef std::shared_ptr<ASIO_NS::ip::tcp::acceptor> tcp_acceptor_ptr;
+		std::vector<tcp_acceptor_ptr> tcp_acceptor_;
 
 		std::size_t max_req_size_ = 2 * 1024 * 1024;
 		long keep_alive_timeout_ = 60;

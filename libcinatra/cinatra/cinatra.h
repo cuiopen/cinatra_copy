@@ -101,7 +101,11 @@ namespace cinatra
 
 		void stop()
 		{
-			server_->stop();
+			if (server_)
+			{
+				server_->stop();
+				server_ = nullptr;
+			}
 		}
 
 		template<typename FunctionT>

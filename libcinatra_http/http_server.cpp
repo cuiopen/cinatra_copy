@@ -81,6 +81,12 @@ namespace cinatra
 			io_service_pool_->get_io_service(), request_handler_, max_req_size_, keep_alive_timeout_);
 		acceptor->async_accept(new_conn->socket(), [this, new_conn, acceptor](const error_code& e)
 		{
+			if (!acceptor->is_open())
+			{
+				new_conn->close();
+				return;
+			}
+
 			if (!e)
 			{
 				new_conn->socket().set_option(ASIO_NS::ip::tcp::no_delay(true));
@@ -103,6 +109,12 @@ namespace cinatra
 			io_service_pool_->get_io_service(), request_handler_, *ssl_ctx, max_req_size_, keep_alive_timeout_);
 		acceptor->async_accept(new_conn->socket().lowest_layer(), [this, new_conn, acceptor, ssl_ctx](const error_code& e)
 		{
+			if (!acceptor->is_open())
+			{
+				new_conn->close();
+				return;
+			}
+
 			if (!e)
 			{
 				new_conn->socket().lowest_layer().set_option(ASIO_NS::ip::tcp::no_delay(true));
@@ -142,10 +154,16 @@ namespace cinatra
 		acceptor->set_option(ASIO_NS::ip::tcp::acceptor::reuse_address(true));
 		acceptor->bind(endpoint);
 		acceptor->listen();
+
+		tcp_acceptor_.push_back(acceptor);
 	}
 
 	void http_server::stop()
 	{
+		for (auto & acceptor : tcp_acceptor_)
+			acceptor->close();
+		tcp_acceptor_.clear();
+
 		io_service_pool_->stop();
 	}
 
